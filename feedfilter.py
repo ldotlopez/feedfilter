@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+
 import sys
-import argparse
+import optparse
 import xml.dom.minidom as minidom
 
 from filters.meneame import MeneameRewriteLink
@@ -13,18 +15,20 @@ def feedfilter(in_fh, out_fh, filters = ()):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser('Filter rss/atom/etc feeds')
-    parser.add_argument('-i', '--in', dest='input', metavar='INPUT',
+    parser = optparse.OptionParser('Filter rss/atom/etc feeds')
+    parser.add_option('-i', '--in', dest='input', metavar='INPUT',
+                      action='store',
         help='Input filename or - for stdin')
-    parser.add_argument('-o', '--out', dest='output', metavar='OUTPUT',
+    parser.add_option('-o', '--out', dest='output', metavar='OUTPUT',
+                      action='store',
         help='Output filename or - for stdout')
 
-    args = parser.parse_args(sys.argv[1:])
-    _out = args.output or '-'
-    _in  = args.input  or '-'
+    (options, args) = parser.parse_args(sys.argv[1:])
+    _in  = options.input  or '-'
+    _out = options.output or '-'
 
     in_fh  = open(_in) if _in != '-' else sys.stdin
-    out_fh = open(_out, 'w+') if _in != '-' else sys.stdout
+    out_fh = open(_out, 'w+') if _out != '-' else sys.stdout
 
     feedfilter(in_fh, out_fh, (MeneameRewriteLink(),))
 
